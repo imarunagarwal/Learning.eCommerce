@@ -10,8 +10,11 @@ using UserWebApi.BusinessAccessLayer.Contracts;
 using UserWebApi.SharedLayer.Dtos;
 using UserWebApi.WebApi.ViewModels;
 
-namespace UserWebApi.WebApi.Controller
+namespace ProductWebApi.WebApi.Controller
 {
+    /// <summary>
+    /// The user Controller
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -19,10 +22,14 @@ namespace UserWebApi.WebApi.Controller
     [Produces("application/json")]
     public class UsersController : ControllerBase
     {
-
         private readonly IMapper _mapper;
         private readonly IUserBAL _userBAL;
 
+        /// <summary>
+        /// Constructor method
+        /// </summary>
+        /// <param name="mapper">Mapper configuration</param>
+        /// <param name="userBAL">userBAL object</param>
         public UsersController(IMapper mapper, IUserBAL userBAL)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -111,7 +118,7 @@ namespace UserWebApi.WebApi.Controller
                     return StatusCode((int)HttpStatusCode.InternalServerError, "Error at backend is blocking edit.");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ExceptionLogging.SendErrorToText(ex);
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
@@ -140,6 +147,28 @@ namespace UserWebApi.WebApi.Controller
                 }
 
                 return Ok(_mapper.Map<UserViewModel>(user));
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogging.SendErrorToText(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Checks if the user Exists
+        /// </summary>
+        /// <returns>Boolean result based on the existance of user</returns>
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        public async Task<IActionResult> IsUserExists()
+        {
+            try
+            {
+                var currentUserId = int.Parse(User.Identity.Name);
+
+                var user = await _userBAL.GetUserByIdAsync(currentUserId);
+
+                return Ok(user == null ? false : true);
             }
             catch (Exception ex)
             {

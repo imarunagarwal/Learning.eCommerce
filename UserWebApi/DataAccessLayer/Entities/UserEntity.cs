@@ -26,7 +26,7 @@ namespace UserWebApi.DataAccessLayer.Entities
 
         public int Age { get; set; }
 
-        [RegularExpression(@"^{10}[0-9]{10}$")]
+        [RegularExpression(@"^[0-9]{10}$")]
         public string PhoneNo { get; set; }
     }
 }

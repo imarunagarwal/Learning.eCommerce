@@ -1,17 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace UserWebApi
+namespace ProductsWebApi
 {
     public class Program
     {
         public static IConfiguration _configuration;
 
-        public Program(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -22,7 +23,7 @@ namespace UserWebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .UseUrls(_configuration["UserApiUrl"]);
+                        .UseUrls(_configuration["ProductApiUrl"]);
                 });
     }
 }

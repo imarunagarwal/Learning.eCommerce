@@ -16,27 +16,62 @@ namespace UserWebApi.BusinessAccessLayer.Repository
 
         public async Task<ResponseDto> CreateUserAsync(UserDto user)
         {
-            return await _userDAL.CreateUserAsync(user);
+            try
+            {
+                return await _userDAL.CreateUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<bool> EditUserAsync(UserDto user)
         {
-            return await _userDAL.EditUserAsync(user);
+            try
+            {
+                return await _userDAL.EditUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<UserDto> GetUserByIdAsync(int userId)
         {
-            return await _userDAL.GetUserByIdAsync(userId);
+            try
+            {
+                return await _userDAL.GetUserByIdAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<bool> IsUserExistsAsync(string emailId)
         {
-            return await _userDAL.IsUserExistsAsync(emailId);
+            try
+            {
+                return await _userDAL.IsUserExistsAsync(emailId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<ResponseDto> LoginAsync(LoginUserDto loginUser)
         {
-            return await _userDAL.LoginAsync(loginUser);
+            try
+            {
+                return await _userDAL.LoginAsync(loginUser);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

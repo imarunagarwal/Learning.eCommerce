@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>UserWebApi.xml</DocumentationFile>
     <NoWarn>1701;1702;1591,0001</NoWarn>
   </PropertyGroup>
 

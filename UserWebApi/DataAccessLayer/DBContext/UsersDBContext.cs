@@ -1,33 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Security.Cryptography;
-using System.Text;
 using UserWebApi.DataAccessLayer.Entities;
 using static UserWebApi.SharedLayer.Enums.Enums;
+using UserWebApi.DataAccessLayer.Contracts;
 
 namespace UserWebApi.DataAccessLayer.DBContext
 {
     public class UsersDBContext : DbContext
     {
+        private readonly ICoreRepository _coreRepository;
 
-        public UsersDBContext(DbContextOptions options) : base(options)
+        public UsersDBContext(DbContextOptions options, ICoreRepository coreRepository) : base(options)
         {
+            _coreRepository = coreRepository ?? throw new ArgumentNullException(nameof(coreRepository));
         }
 
         public DbSet<UserEntity> Users { get; set; }
 
-        private string GenerateHashedPassword(string password)
-        {
-            MD5 md5Hash = MD5.Create();
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-            StringBuilder sBuilder = new StringBuilder();
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-            return sBuilder.ToString();
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,7 +27,7 @@ namespace UserWebApi.DataAccessLayer.DBContext
                     FirstName = "admin",
                     LastName = "user",
                     EmailId = "admin.user@testing.com",
-                    Password = GenerateHashedPassword("Arun@1234"),
+                    Password = _coreRepository.GenerateHashedPassword("Arun@1234"),
                     Gender = Gender.Male,
                     Age = 1,
                     PhoneNo = "1234512345"
