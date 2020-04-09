@@ -76,6 +76,7 @@ namespace UserWebApi.DataAccessLayer.Repository
             {
                 var createUser = _mapper.Map<UserEntity>(user);
                 createUser.Password = _coreRepository.GenerateHashedPassword(createUser.Password);
+                createUser.UserId = new Guid();
                 _context.Users.Add(createUser);
                 await _context.SaveChangesAsync();
                 UserDto savedUser = _mapper.Map<UserDto>(createUser);
@@ -87,7 +88,7 @@ namespace UserWebApi.DataAccessLayer.Repository
             }
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int userId)
+        public async Task<UserDto> GetUserByIdAsync(Guid userId)
         {
             try
             {

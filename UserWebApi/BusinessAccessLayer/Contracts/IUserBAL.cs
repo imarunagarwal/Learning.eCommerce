@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UserWebApi.SharedLayer.Dtos;
 
 namespace UserWebApi.BusinessAccessLayer.Contracts
@@ -9,7 +10,7 @@ namespace UserWebApi.BusinessAccessLayer.Contracts
 
         Task<bool> EditUserAsync(UserDto user);
         
-        Task<UserDto> GetUserByIdAsync(int userId);
+        Task<UserDto> GetUserByIdAsync(Guid userId);
         
         Task<bool> IsUserExistsAsync(string emailId);
         

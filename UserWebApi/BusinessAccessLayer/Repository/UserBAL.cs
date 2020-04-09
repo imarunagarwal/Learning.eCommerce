@@ -38,7 +38,7 @@ namespace UserWebApi.BusinessAccessLayer.Repository
             }
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int userId)
+        public async Task<UserDto> GetUserByIdAsync(Guid userId)
         {
             try
             {

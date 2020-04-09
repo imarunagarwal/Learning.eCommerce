@@ -38,6 +38,7 @@ namespace ProductWebApi.DataAccessLayer.Repository
         {
             try
             {
+                product.ProductId = new Guid();
                 var addedProduct = await _context.Products.AddAsync(_mapper.Map<ProductEntity>(product));
                 await _context.SaveChangesAsync();
                 return _mapper.Map<ProductDto>(addedProduct);

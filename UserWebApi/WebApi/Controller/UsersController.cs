@@ -10,7 +10,7 @@ using UserWebApi.BusinessAccessLayer.Contracts;
 using UserWebApi.SharedLayer.Dtos;
 using UserWebApi.WebApi.ViewModels;
 
-namespace ProductWebApi.WebApi.Controller
+namespace UserWebApi.WebApi.Controller
 {
     /// <summary>
     /// The user Controller
@@ -137,7 +137,7 @@ namespace ProductWebApi.WebApi.Controller
         {
             try
             {
-                var currentUserId = int.Parse(User.Identity.Name);
+                var currentUserId = Guid.Parse(User.Identity.Name);
 
                 var user = await _userBAL.GetUserByIdAsync(currentUserId);
 
@@ -164,7 +164,7 @@ namespace ProductWebApi.WebApi.Controller
         {
             try
             {
-                var currentUserId = int.Parse(User.Identity.Name);
+                var currentUserId = Guid.Parse(User.Identity.Name);
 
                 var user = await _userBAL.GetUserByIdAsync(currentUserId);
 
