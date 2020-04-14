@@ -3,6 +3,7 @@ using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -60,15 +61,30 @@ namespace UserWebApi.WebApi.Controller
                     return BadRequest("User Already Exists");
                 }
                 user.UserId = new Guid();
-                var response = await _userBAL.CreateUserAsync(_mapper.Map<UserDto>(user));
-                
-                Guid cartId = await CreateCart(response.Token);
-                var result = await _userBAL.AddCartId(user.UserId, cartId);
-                if (!result)
+                var responseViewModel = _mapper.Map<ResponseViewModel>(await _userBAL.CreateUserAsync(_mapper.Map<UserDto>(user)));
+
+                var token = string.Concat("Bearer ", responseViewModel.Token);
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4002/api/Cart/Create");
+                request.Headers.Add("Authorization", token);
+
+                var client = _clientFactory.CreateClient();
+                var requestResponse = await client.SendAsync(request);
+
+                if (requestResponse.IsSuccessStatusCode)
                 {
-                    return StatusCode((int)HttpStatusCode.InternalServerError, "Cart Id not saved in user table");
+                    var responseStream = await requestResponse.Content.ReadAsStringAsync();
+                    var cartId = JsonConvert.DeserializeObject<Guid>(responseStream);
+                    var result = await _userBAL.AddCartId(user.UserId, cartId);
+                    if (!result)
+                    {
+                        return StatusCode((int)HttpStatusCode.InternalServerError, "Cart Id not saved in user table");
+                    }
+                    return Ok(_mapper.Map<ResponseViewModel>(responseViewModel));
                 }
-                return Ok(_mapper.Map<ResponseViewModel>(response));
+                else
+                {
+                    throw new Exception("CreateCart Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -186,20 +202,6 @@ namespace UserWebApi.WebApi.Controller
                 ExceptionLogging.SendErrorToText(ex);
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
-        }
-
-        private async Task<Guid> CreateCart(string token)
-        {
-            token = string.Concat("Bearer ", token);
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4002/api/Cart/Create");
-            request.Headers.Add("Authorization", token);
-
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            
-            Guid.TryParse(await response.Content.ReadAsStringAsync(), out Guid cartId);
-            
-            return cartId;
         }
     }
 }

@@ -20,5 +20,7 @@ namespace ProductWebApi.DataAccessLayer.Entities
         public string VendorDetails { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public float Price { get; set; }
     }
 }

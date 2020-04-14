@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-namespace ProductsWebApi
+namespace CartWebApi
 {
     public class Program
     {
-        public static IConfiguration _configuration;
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -23,7 +15,7 @@ namespace ProductsWebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                        .UseUrls("http://localhost:4001");
+                    .UseUrls("http://localhost:4002");
                 });
     }
 }

@@ -92,13 +92,35 @@ namespace ProductWebApi.WebApi.Controller
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductViewModel))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts([FromBody] Guid productId)
+        public async Task<IActionResult> GetProductByIdAsync([FromBody] Guid productId)
         {
             try
             {
                 var product = await _productBAL.GetProductByIdAsync(productId);
 
                 return Ok(_mapper.Map<ProductViewModel>(product));
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogging.SendErrorToText(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost("checkOut")]
+        public async Task<IActionResult> CheckOutCartAsync(List<CartCheckoutViewModel> items)
+        {
+            try
+            {
+                bool result = await _productBAL.CheckOutCartProductsAsync(_mapper.Map<List<CartCheckoutDto>>(items));
+                if (result)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    throw new Exception("Can't check out. Error Occured");
+                }
             }
             catch (Exception ex)
             {

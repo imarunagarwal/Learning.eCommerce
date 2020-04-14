@@ -17,5 +17,7 @@ namespace ProductWebApi.SharedLayer.Dtos
         public string VendorDetails { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public float Price { get; set; }
     }
 }

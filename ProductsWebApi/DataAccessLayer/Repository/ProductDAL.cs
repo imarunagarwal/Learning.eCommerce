@@ -75,6 +75,7 @@ namespace ProductWebApi.DataAccessLayer.Repository
                         result = false;
                         break;
                     }
+                    product.Quantity -= item.Quantity;
                     _context.Entry(product).State = EntityState.Modified;
                 }
                 await _context.SaveChangesAsync();

@@ -1,4 +1,11 @@
+using System.IO;
+using System.Reflection;
 using AutoMapper;
+using CartWebApi.BusinessAccessLayer.Contracts;
+using CartWebApi.BusinessAccessLayer.Repository;
+using CartWebApi.DataAccessLayer.Contracts;
+using CartWebApi.DataAccessLayer.DBContext;
+using CartWebApi.DataAccessLayer.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,15 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ProductWebApi.BusinessAccessLayer.Contracts;
-using ProductWebApi.BusinessAccessLayer.Repository;
-using ProductWebApi.DataAccessLayer.Contracts;
-using ProductWebApi.DataAccessLayer.DBContext;
-using ProductWebApi.DataAccessLayer.Repository;
-using System.IO;
-using System.Reflection;
 
-namespace ProductsWebApi
+namespace CartWebApi
 {
     public class Startup
     {
@@ -32,20 +32,21 @@ namespace ProductsWebApi
             // ToDo be configuredd according to requirement
             services.AddCors();
             services.AddControllers();
+            services.AddHttpClient();
 
-            services.AddDbContext<ProductsDBContext>(options =>
+            services.AddDbContext<CartsDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
-            services.AddScoped<IProductDAL, ProductDAL>();
-            services.AddScoped<IProductBAL, ProductBAL>();
+
+            services.AddScoped<ICartDAL, CartDAL>();
+            services.AddScoped<ICartBAL, CartBAL>();
 
             services.AddSwaggerGen(setupAction =>
             {
                 setupAction.SwaggerDoc(
-                    "ProductWebAPI",
+                    "CartWebAPI",
                     new OpenApiInfo()
                     {
-                        Title = "e-Commerce ProductApi",
+                        Title = "e-Commerce Cart",
                         Version = "1"
                     }
                 );
@@ -100,7 +101,7 @@ namespace ProductsWebApi
             app.UseSwagger();
             app.UseSwaggerUI(setupAction =>
             {
-                setupAction.SwaggerEndpoint("/swagger/ProductWebAPI/swagger.json", "e-Commerce User API");
+                setupAction.SwaggerEndpoint("/swagger/CartWebAPI/swagger.json", "e-Commerce User API");
                 setupAction.RoutePrefix = "";
             });
 
