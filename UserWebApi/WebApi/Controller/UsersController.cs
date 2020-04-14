@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UserWebApi.BusinessAccessLayer.Contracts;
 using UserWebApi.SharedLayer.Dtos;
@@ -24,14 +25,17 @@ namespace UserWebApi.WebApi.Controller
     {
         private readonly IMapper _mapper;
         private readonly IUserBAL _userBAL;
+        private readonly IHttpClientFactory _clientFactory;
 
         /// <summary>
         /// Constructor method
         /// </summary>
         /// <param name="mapper">Mapper configuration</param>
         /// <param name="userBAL">userBAL object</param>
-        public UsersController(IMapper mapper, IUserBAL userBAL)
+        /// <param name="clientFactory">Http Configuration</param>
+        public UsersController(IMapper mapper, IUserBAL userBAL, IHttpClientFactory clientFactory)
         {
+            _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userBAL = userBAL ?? throw new ArgumentNullException(nameof(userBAL));
         }
@@ -40,9 +44,9 @@ namespace UserWebApi.WebApi.Controller
         /// Create a new user
         /// </summary>
         /// <param name="user">UserViewModel</param>
-        /// <returns>Returns the ResponseDto object</returns>
+        /// <returns>Returns the ResponseViewModel object</returns>
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Create")]
@@ -55,9 +59,16 @@ namespace UserWebApi.WebApi.Controller
                 {
                     return BadRequest("User Already Exists");
                 }
+                user.UserId = new Guid();
                 var response = await _userBAL.CreateUserAsync(_mapper.Map<UserDto>(user));
-
-                return Ok(response);
+                
+                Guid cartId = await CreateCart(response.Token);
+                var result = await _userBAL.AddCartId(user.UserId, cartId);
+                if (!result)
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, "Cart Id not saved in user table");
+                }
+                return Ok(_mapper.Map<ResponseViewModel>(response));
             }
             catch (Exception ex)
             {
@@ -72,7 +83,7 @@ namespace UserWebApi.WebApi.Controller
         /// <param name="loginUser">LoginUserViewModel</param>
         /// <returns>Returns the RsponseDto object</returns>
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Login")]
@@ -86,7 +97,7 @@ namespace UserWebApi.WebApi.Controller
                 {
                     return BadRequest(new { message = "UserName or Password is invalid" });
                 }
-                return Ok(response);
+                return Ok(_mapper.Map<ResponseViewModel>(response));
             }
             catch (Exception ex)
             {
@@ -175,6 +186,20 @@ namespace UserWebApi.WebApi.Controller
                 ExceptionLogging.SendErrorToText(ex);
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
+
+        private async Task<Guid> CreateCart(string token)
+        {
+            token = string.Concat("Bearer ", token);
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4002/api/Cart/Create");
+            request.Headers.Add("Authorization", token);
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            
+            Guid.TryParse(await response.Content.ReadAsStringAsync(), out Guid cartId);
+            
+            return cartId;
         }
     }
 }

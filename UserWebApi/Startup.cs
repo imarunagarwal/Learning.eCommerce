@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,7 @@ namespace UserWebApi
             // ToDo be configuredd according to requirement
             services.AddCors();
             services.AddControllers();
-
+            services.AddHttpClient();
             services.AddDbContext<UsersDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -69,6 +70,7 @@ namespace UserWebApi
             });
 
             // configure DI for application services
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(tokenValidationParameters);
             services.AddScoped<ICoreRepository, CoreRepository>();
             services.AddScoped<IUserDAL, UserDAL>();
@@ -123,8 +125,6 @@ namespace UserWebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 

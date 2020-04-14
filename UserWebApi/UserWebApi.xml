@@ -9,7 +9,7 @@
             The user Controller
             </summary>
         </member>
-        <member name="M:UserWebApi.WebApi.Controller.UsersController.#ctor(AutoMapper.IMapper,UserWebApi.BusinessAccessLayer.Contracts.IUserBAL)">
+        <member name="M:UserWebApi.WebApi.Controller.UsersController.#ctor(AutoMapper.IMapper,UserWebApi.BusinessAccessLayer.Contracts.IUserBAL,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Constructor method
             </summary>

@@ -15,5 +15,7 @@ namespace UserWebApi.DataAccessLayer.Contracts
         Task<bool> IsUserExistsAsync(string emailId);
 
         Task<ResponseDto> LoginAsync(LoginUserDto loginUser);
+
+        Task<bool> AddCartId(Guid userId, Guid cartId);
     }
 }

@@ -73,5 +73,17 @@ namespace UserWebApi.BusinessAccessLayer.Repository
                 throw ex;
             }
         }
+
+        public async Task<bool> AddCartId(Guid userId, Guid cartId)
+        {
+            try
+            {
+                return await _userDAL.AddCartId(userId, cartId);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

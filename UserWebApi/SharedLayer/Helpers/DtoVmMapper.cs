@@ -10,6 +10,7 @@ namespace UserWebApi.SharedLayer.AutoMapperProfile
         {
             CreateMap<UserDto, UserViewModel>().ReverseMap();
             CreateMap<LoginUserDto, LoginUserViewModel>().ReverseMap();
+            CreateMap<ResponseDto, ResponseViewModel>().ReverseMap();
         }
     }
 }
