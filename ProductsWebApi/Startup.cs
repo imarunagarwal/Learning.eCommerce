@@ -1,10 +1,12 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProductWebApi.BusinessAccessLayer.Contracts;
 using ProductWebApi.BusinessAccessLayer.Repository;
@@ -13,6 +15,7 @@ using ProductWebApi.DataAccessLayer.DBContext;
 using ProductWebApi.DataAccessLayer.Repository;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace ProductsWebApi
 {
@@ -35,7 +38,32 @@ namespace ProductsWebApi
 
             services.AddDbContext<ProductsDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
+
+            string appSettingsSection = Configuration.GetValue<string>("AppSettings:Secret");
+            var key = Encoding.ASCII.GetBytes(appSettingsSection);
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true
+            };
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = tokenValidationParameters;
+            });
+
             services.AddScoped<IProductDAL, ProductDAL>();
             services.AddScoped<IProductBAL, ProductBAL>();
 

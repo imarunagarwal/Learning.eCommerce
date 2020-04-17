@@ -9,19 +9,20 @@
             The user Controller
             </summary>
         </member>
-        <member name="M:UserWebApi.WebApi.Controller.UsersController.#ctor(AutoMapper.IMapper,UserWebApi.BusinessAccessLayer.Contracts.IUserBAL,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:UserWebApi.WebApi.Controller.UsersController.#ctor(AutoMapper.IMapper,UserWebApi.BusinessAccessLayer.Contracts.IUserBAL,System.Net.Http.IHttpClientFactory)">
             <summary>
             Constructor method
             </summary>
             <param name="mapper">Mapper configuration</param>
             <param name="userBAL">userBAL object</param>
+            <param name="clientFactory">Http Configuration</param>
         </member>
         <member name="M:UserWebApi.WebApi.Controller.UsersController.CreateUser(UserWebApi.WebApi.ViewModels.UserViewModel)">
             <summary>
             Create a new user
             </summary>
             <param name="user">UserViewModel</param>
-            <returns>Returns the ResponseDto object</returns>
+            <returns>Returns the ResponseViewModel object</returns>
         </member>
         <member name="M:UserWebApi.WebApi.Controller.UsersController.Login(UserWebApi.WebApi.ViewModels.LoginUserViewModel)">
             <summary>

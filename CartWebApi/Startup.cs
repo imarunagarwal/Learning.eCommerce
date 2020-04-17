@@ -1,17 +1,20 @@
 using System.IO;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
 using CartWebApi.BusinessAccessLayer.Contracts;
 using CartWebApi.BusinessAccessLayer.Repository;
 using CartWebApi.DataAccessLayer.Contracts;
 using CartWebApi.DataAccessLayer.DBContext;
 using CartWebApi.DataAccessLayer.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace CartWebApi
@@ -36,6 +39,31 @@ namespace CartWebApi
 
             services.AddDbContext<CartsDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            string appSettingsSection = Configuration.GetValue<string>("AppSettings:Secret");
+            var key = Encoding.ASCII.GetBytes(appSettingsSection);
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true
+            };
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = tokenValidationParameters;
+            });
 
             services.AddScoped<ICartDAL, CartDAL>();
             services.AddScoped<ICartBAL, CartBAL>();

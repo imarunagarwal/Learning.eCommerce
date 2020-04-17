@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CartWebApi</name>
+    </assembly>
+    <members>
+        <member name="T:CartWebApi.WebApi.Controller.CartController">
+            <summary>
+            The Cart Controller
+            </summary>
+        </member>
+        <member name="T:Helpers.ExceptionLogging">
+            <summary>  
+            Summary description for ExceptionLogging  
+            </summary>  
+        </member>
+    </members>
+</doc>

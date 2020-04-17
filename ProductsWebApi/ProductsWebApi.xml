@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ProductsWebApi</name>
+    </assembly>
+    <members>
+        <member name="T:ProductWebApi.WebApi.Controller.ProductsController">
+            <summary>
+            The user Controller
+            </summary>
+        </member>
+        <member name="T:Helpers.ExceptionLogging">
+            <summary>  
+            Summary description for ExceptionLogging  
+            </summary>  
+        </member>
+    </members>
+</doc>

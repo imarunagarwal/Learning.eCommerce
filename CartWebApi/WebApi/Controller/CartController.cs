@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace CartWebApi.WebApi.Controller
 {
     /// <summary>
-    /// The user Controller
+    /// The Cart Controller
     /// </summary>
     [Route("api/[controller]")]
     [Authorize]
@@ -55,6 +55,7 @@ namespace CartWebApi.WebApi.Controller
         {
             try
             {
+                //doubt
                 var response = await _cartBAL.ChangeItemQuantity(itemId, quantity);
                 return Ok(_mapper.Map<ItemsViewModel>(response));
             }
@@ -115,11 +116,12 @@ namespace CartWebApi.WebApi.Controller
         {
             try
             {
+                //Doubt Url from config file
                 string token = Request.Headers[HeaderNames.Authorization];
                 Guid userId = Guid.Parse(User.Identity.Name);
                 var cart = await _cartBAL.GetCartByUserId(userId);
 
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4002/api/Product/checkOut");
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4001/api/Product/checkOut");
                 request.Headers.Add("Authorization", token);
                 request.Content.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
 
