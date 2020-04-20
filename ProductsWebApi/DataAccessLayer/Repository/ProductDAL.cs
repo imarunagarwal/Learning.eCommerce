@@ -115,5 +115,18 @@ namespace ProductWebApi.DataAccessLayer.Repository
                 throw ex;
             }
         }
+
+        public async Task<bool> IsAddToCartpossible(ProductDto product)
+        {
+            try
+            {
+                var productEntity = await _context.Products.FindAsync(product.ProductId);
+                return (productEntity.Quantity >= product.Quantity) ? true : false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

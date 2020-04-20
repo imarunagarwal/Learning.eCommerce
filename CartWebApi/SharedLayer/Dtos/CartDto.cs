@@ -10,5 +10,9 @@ namespace CartWebApi.SharedLayer.Dtos
         public Guid UserId { get; set; }
 
         public ICollection<ItemsDto> Items { get; set; }
+
+        public bool IsCheckedOut { get; set; }
+
+        public DateTime PurchaseDate { get; set; }
     }
 }

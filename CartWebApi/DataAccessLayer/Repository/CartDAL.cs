@@ -68,15 +68,15 @@ namespace CartWebApi.DataAccessLayer.Repository
             }
         }
 
-        public async Task<ItemsDto> RemoveItemFromCart(ItemsDto item)
+        public async Task<ItemsDto> RemoveItemFromCart(Guid itemId)
         {
             try
             {
-                var itemEntity = _mapper.Map<ItemsEntity>(item);
+                var itemEntity = await _context.Items.FindAsync(itemId);
                 _context.Items.Remove(itemEntity);
                 await _context.SaveChangesAsync();
 
-                return _mapper.Map<ItemsDto>(item);
+                return _mapper.Map<ItemsDto>(itemEntity);
             }
             catch (Exception ex)
             {
@@ -110,6 +110,23 @@ namespace CartWebApi.DataAccessLayer.Repository
                 return _mapper.Map<CartDto>(cart);
             }
             catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async void Checkout(Guid cartId)
+        {
+            try
+            {
+                var cart = await _context.Carts.FindAsync(cartId);
+                cart.PurchaseDate = DateTime.Now;
+                cart.IsCheckedOut = true;
+
+                _context.Entry(cart).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
             {
                 throw ex;
             }

@@ -7,6 +7,8 @@ namespace ProductWebApi.BusinessAccessLayer.Contracts
 {
     public interface IProductBAL
     {
+        Task<bool> IsAddToCartpossible(ProductDto product);
+
         Task<ProductDto> AddProductAsync(ProductDto product);
         
         Task<bool> CheckOutCartProductsAsync(List<CartCheckoutDto> cartItemsList);

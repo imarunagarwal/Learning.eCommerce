@@ -18,5 +18,7 @@ namespace ProductWebApi.DataAccessLayer.Contracts
         Task<List<ProductDto>> GetAllProductsAsync();
         
         Task<ProductDto> GetProductByIdAsync(Guid productId);
+
+        Task<bool> IsAddToCartpossible(ProductDto product);
     }
 }

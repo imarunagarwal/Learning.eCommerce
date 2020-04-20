@@ -51,11 +51,11 @@ namespace CartWebApi.BusinessAccessLayer.Repository
             }
         }
 
-        public async Task<ItemsDto> RemoveItemFromCart(ItemsDto item)
+        public async Task<ItemsDto> RemoveItemFromCart(Guid itemId)
         {
             try
             {
-                return await _cartDAL.RemoveItemFromCart(item);
+                return await _cartDAL.RemoveItemFromCart(itemId);
             }
             catch (Exception ex)
             {
@@ -68,6 +68,18 @@ namespace CartWebApi.BusinessAccessLayer.Repository
             try
             {
                 return await _cartDAL.GetCartByUserId(userId);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Checkout(Guid cartId)
+        {
+            try
+            {
+                _cartDAL.Checkout(cartId);
             }
             catch(Exception ex)
             {

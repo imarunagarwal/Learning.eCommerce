@@ -10,5 +10,9 @@ namespace CartWebApi.WebApi.ViewModels
         public Guid UserId { get; set; }
 
         public ICollection<ItemsViewModel> Items { get; set; }
+
+        public bool IsCheckedOut { get; set; }
+
+        public DateTime PurchaseDate { get; set; }
     }
 }

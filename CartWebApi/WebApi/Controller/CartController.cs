@@ -36,13 +36,46 @@ namespace CartWebApi.WebApi.Controller
             _cartBAL = cartBAL ?? throw new ArgumentNullException(nameof(cartBAL));
         }
 
+        private async Task<bool> IsaddItemToCartPossible(ItemsViewModel item, string token)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4001/api/Product/IsAddItemToCartPossible");
+                request.Headers.Add("Authorization", token);
+                request.Content.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
+
+                request.Content = new StringContent(JsonConvert.SerializeObject(item));
+                var client = _clientFactory.CreateClient();
+                var requestResponse = await client.SendAsync(request);
+
+                if (requestResponse.IsSuccessStatusCode)
+                {
+                    var responseStream = await requestResponse.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<bool>(responseStream);
+                }
+                throw new Exception("Error Occured while sending the request");
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogging.SendErrorToText(ex);
+                return false;
+            }
+        }
+
+        [HttpPost("Items")]
         public async Task<IActionResult> AddItemToCart(ItemsViewModel item)
         {
             try
             {
+                string token = Request.Headers[HeaderNames.Authorization];
                 Guid userId = Guid.Parse(User.Identity.Name);
-                var response = await _cartBAL.AddItemToCart(userId, _mapper.Map<ItemsDto>(item));
-                return Ok(_mapper.Map<ItemsViewModel>(response));
+                bool result = await IsaddItemToCartPossible(item, token);
+                if (result)
+                {
+                    var response = await _cartBAL.AddItemToCart(userId, _mapper.Map<ItemsDto>(item));
+                    return Ok(_mapper.Map<ItemsViewModel>(response));
+                }
+                return StatusCode((int)HttpStatusCode.Forbidden, "Not possible as the quantity in inventory is less than the required");
             }
             catch (Exception ex)
             {
@@ -51,13 +84,26 @@ namespace CartWebApi.WebApi.Controller
             }
         }
 
+        [HttpPut("Items")]
         public async Task<IActionResult> ChangeItemQuantity(Guid itemId, int quantity)
         {
             try
             {
-                //doubt
-                var response = await _cartBAL.ChangeItemQuantity(itemId, quantity);
-                return Ok(_mapper.Map<ItemsViewModel>(response));
+                ItemsViewModel item = new ItemsViewModel
+                {
+                    Quantity = quantity,
+                    ItemId = itemId
+                };
+
+                string token = Request.Headers[HeaderNames.Authorization];
+                Guid userId = Guid.Parse(User.Identity.Name);
+                bool result = await IsaddItemToCartPossible(item, token);
+                if (result)
+                {
+                    var response = await _cartBAL.ChangeItemQuantity(itemId, quantity);
+                    return Ok(_mapper.Map<ItemsViewModel>(response));
+                }
+                return StatusCode((int)HttpStatusCode.Forbidden, "Not possible as the quantity in inventory is less than the required");
             }
             catch (Exception ex)
             {
@@ -82,11 +128,12 @@ namespace CartWebApi.WebApi.Controller
             }
         }
 
-        public async Task<IActionResult> RemoveItemFromCart(ItemsViewModel item)
+        [HttpDelete("Items")]
+        public async Task<IActionResult> RemoveItemFromCart(Guid itemId)
         {
             try
             {
-                var response = await _cartBAL.RemoveItemFromCart(_mapper.Map<ItemsDto>(item));
+                var response = await _cartBAL.RemoveItemFromCart(itemId);
                 return Ok(_mapper.Map<ItemsViewModel>(response));
             }
             catch (Exception ex)
@@ -96,10 +143,13 @@ namespace CartWebApi.WebApi.Controller
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> GetCartDetailsByUserId()
         {
             try
             {
+                //Doubt returning only productid and quantity is sufficient or we have to fetch the products as well?
+                //Doubt when user added items it was possible then the items sold out. This case is left to be handled.
                 Guid userId = Guid.Parse(User.Identity.Name);
                 var response = await _cartBAL.GetCartByUserId(userId);
 
@@ -112,6 +162,7 @@ namespace CartWebApi.WebApi.Controller
             }
         }
 
+        [HttpGet("CheckOut")]
         public async Task<IActionResult> CheckOut()
         {
             try
@@ -121,21 +172,26 @@ namespace CartWebApi.WebApi.Controller
                 Guid userId = Guid.Parse(User.Identity.Name);
                 var cart = await _cartBAL.GetCartByUserId(userId);
 
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4001/api/Product/checkOut");
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:4001/api/Product/CheckOut");
                 request.Headers.Add("Authorization", token);
                 request.Content.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
 
                 request.Content = new StringContent(JsonConvert.SerializeObject(cart.Items));
                 var client = _clientFactory.CreateClient();
                 var requestResponse = await client.SendAsync(request);
-                var result = false;
+
                 if (requestResponse.IsSuccessStatusCode)
                 {
                     var responseStream = await requestResponse.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<bool>(responseStream);
+                    var result = JsonConvert.DeserializeObject<bool>(responseStream);
+
+                    if (result)
+                    {
+                        _cartBAL.Checkout(cart.CartId);
+                    }
                 }
 
-                return Ok(result);
+                throw new Exception("Operation not possible checkout from cart failed");
             }
             catch (Exception ex)
             {

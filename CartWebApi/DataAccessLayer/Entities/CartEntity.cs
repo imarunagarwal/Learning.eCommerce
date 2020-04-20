@@ -12,5 +12,9 @@ namespace CartWebApi.DataAccessLayer.Entities
         public Guid UserId { get; set; }
 
         public virtual ICollection<ItemsEntity> Items { get; set; }
+
+        public bool IsCheckedOut { get; set; }
+
+        public DateTime PurchaseDate { get; set; }
     }
 }

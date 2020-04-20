@@ -12,8 +12,10 @@ namespace CartWebApi.DataAccessLayer.Contracts
         
         Task<Guid> GetCartIdByUserId(Guid userId);
         
-        Task<ItemsDto> RemoveItemFromCart(ItemsDto item);
+        Task<ItemsDto> RemoveItemFromCart(Guid itemId);
 
         Task<CartDto> GetCartByUserId(Guid userId);
+
+        void Checkout(Guid cartId);
     }
 }

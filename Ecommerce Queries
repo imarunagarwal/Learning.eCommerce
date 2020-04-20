@@ -1,0 +1,12 @@
+ECommerce
+	1) Do we need the cart checkout balance call?
+	2) Confirmation on mechanism of fetching the Bearer token?
+	3) How to pick the urls from the appsettings.json instead of hard coding them in program.cs file?
+	4) Change in quantity call in cart vertical.
+
+Misc
+	1) How to host the db and server code if an api is working on local env.
+	2) How to set the system variables? And create a boiler plate code for logging exception based on system variable in asp.net
+	3) Any mail engine which is available for free?
+	4) Netflix like security mechanism?
+	

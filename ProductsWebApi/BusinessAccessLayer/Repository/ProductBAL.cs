@@ -85,5 +85,17 @@ namespace ProductWebApi.BusinessAccessLayer.Repository
                 throw ex;
             }
         }
+
+        public async Task<bool> IsAddToCartpossible(ProductDto product)
+        {
+            try
+            {
+                return await _productDAL.IsAddToCartpossible(product);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

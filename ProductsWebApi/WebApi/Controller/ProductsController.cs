@@ -107,7 +107,7 @@ namespace ProductWebApi.WebApi.Controller
             }
         }
 
-        [HttpPost("checkOut")]
+        [HttpPost("CheckOut")]
         public async Task<IActionResult> CheckOutCartAsync(List<CartCheckoutViewModel> items)
         {
             try
@@ -121,6 +121,21 @@ namespace ProductWebApi.WebApi.Controller
                 {
                     throw new Exception("Can't check out. Error Occured");
                 }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogging.SendErrorToText(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost("IsAddItemToCartPossible")]
+        public async Task<IActionResult> AddItemToCart(ProductViewModel product)
+        {
+            try
+            {
+                bool result = await _productBAL.IsAddToCartpossible(_mapper.Map<ProductDto>(product));
+                return Ok(result);
             }
             catch (Exception ex)
             {
